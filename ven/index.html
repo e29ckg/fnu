@@ -91,7 +91,8 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <td colspan="3" class="text-center">รายการ <a href="../../vengg/" target="_blank" rel="noopener noreferrer">โปรแกรมตารางเวร</a></td>
+                            <td colspan="2" class="text-center">รายการ <a href="../../vengg/" target="_blank" rel="noopener noreferrer">โปรแกรมตารางเวร</a></td>
+                            <td> <a href="./bank/index.html" target="_blank">ตั้งค่าบัญชีธนาคาร</a></td>
                         </tr>
                     </thead>
                     <tbody>
@@ -100,9 +101,12 @@
                             <td>
                                 {{vcs.ven_com_num}}
                             </td>
-                            <td><a :href="'./report_a0.html?ven_com_id='+vcs.id" target="_blank">ใบขวางสรุป </a></td>
+                            <td>
+                                <a :href="'./report_a0.html?ven_com_id='+vcs.id" target="_blank">ใบขวางสรุป </a> 
+                                <a :href="'./report_b0.html?ven_com_id='+vcs.id" target="_blank">หน้างบประกอบการอนุมัติ </a>
+                            </td>
                         </tr>
-                        <tr>
+                        <!-- <tr>
                             <td>☀️ กลางวัน</td>
                             <td>
                                 <span v-if="DN_D_ALL() != datas.price_d">&#x274C;</span>
@@ -135,11 +139,11 @@
                             <td colspan="2">
                                 <a href="./bank/index.html" target="_blank">ตั้งค่าบัญชีธนาคาร</a>
                             </td>
-                            <td ><a :href="'./report_x1.html?month='+year+'-'+month" target="_blank">หน้างบประกอบการอนุมัติ</a></td>                            
-                        </tr>
+                            <td ><a :href="'./report_x1.html?month='+year+'-'+month" target="_blank">หน้างบประกอบการอนุมัติ</a></td>                        
+                        </tr> -->
                         <tr>
                             <td colspan="2"></td>
-                            <td ><a :href="datas.link_download" target="_blank">บันทึกขออนุมัติเบิกเงิน(.docx)</a></td>
+                            <td ><a href="#" @click="download_docx()">บันทึกขออนุมัติเบิกเงิน(.docx)</a></td>
                         </tr>
                         
                     </tbody>
@@ -176,7 +180,8 @@
                 DN_total        : 0,
                 month           : '',
                 year            : '',
-                month_text : ''
+                month_text      : '',
+                isLoading       : false
             }
         },
         mounted: function() {
@@ -234,6 +239,25 @@
                         // this.PRICE_ALL()
                     })
             },
+            download_docx(){
+                // console.log('download_docx')
+                this.isLoading = true;
+                axios.post('api/report_docx.php',{month:this.month})
+                .then(response => {
+                    if (response.data.status) {
+                        this.alert("success",response.data.message,timer=1000)
+                        window.open('api/ven.docx','_blank')
+                    } else{
+                        this.alert("warning",response.data.message,timer=0)
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                })
+            },
             find(){
                 console.log(this.year + '-' + this.month) ;
             },
@@ -266,6 +290,14 @@
                 number = parseFloat(number);
                 return number.toFixed(0).replace(/./g, function(c, i, a) {
                     return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
+                });
+            },
+            alert(icon,message,timer=0){
+                swal.fire({
+                    icon: icon,
+                    title: message,
+                    showConfirmButton: false,
+                    timer: timer
                 });
             },
 

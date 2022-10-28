@@ -4,7 +4,7 @@ $DBhost = "localhost";
 $DBuser = "root";
 $DBpassword ="";
 $DBname="vengg";
-$port="3333";
+$port="3306";
 // 
 // $conn = mysqli_connect($DBhost, $DBuser, $DBpassword, $DBname); 
 try{

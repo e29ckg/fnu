@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>กลางคืน</title>
+    <title>report</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <style>
             @font-face {
@@ -65,8 +65,10 @@ td, th {
 <style type="text/css" media="print">
     @page
     {
-        size: auto; /* auto is the initial value */
-        margin: 8mm 4mm 4mm 4mm; /* this affects the margin in the printer settings */
+        /* size: A4; */
+        size: A4 landscape;
+        font-size: 14px;
+        margin: 8mm 4mm 4mm 8mm; /* this affects the margin in the printer settings */
     }
     thead
     {
@@ -82,40 +84,44 @@ td, th {
 <body>
 
     <div class="content-wrapper" id="app" v-cloak>
-        <div class="head-top">
+        <!-- <div class="head-top">
             หลักฐานการจ่ายเงินค่าตอบแทนการปฏิบัติงานนอกเวลาราชการกรณีปิดทำการศาลในวันหยุด<br>
             ส่วนราชการ ศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์ ประจำเดือน {{datas.month}}<br>
             คำสั่งศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์ ที่ {{datas.ven_com_num}} ({{datas.ven_com_name}})
-        </div>
+        </div> -->
         <table>
-            <!-- <tr>
-                <td :colspan="datas.day_num +2" class="text-center">วันที่ที่ปฏิบัติงานนอกเวลาราชการ</td>
-                <td :colspan="datas.day_num +2" class="text-center">วันที่ที่ปฏิบัติงานนอกเวลาราชการ</td>
-                <!-- <td> จำนวน {{datas.count}} ราย</td> 
-            </tr> -->
-            <tr >
-                <td rowspan="2" class="head-table">ลำดับ</td>
-                <td rowspan="2" class="head-table">ชื่อ</td>
-                <td rowspan="2" class="head-table">อัตราค่า<br>ตอบแทน</td>
-                <td :colspan="datas.day_num" class="head-table">วันที่ที่ปฏิบัติงานนอกเวลาราชการ</td>
-                <td colspan="3" class="head-table">รวมระยะเวลา<br>ปฏิบัติงาน</td>
-                <td rowspan="2" class="head-table">จำนวนเงิน</td>
-                <td rowspan="2" class="head-table">วันเดือนปี</td>
-                <td rowspan="2" class="head-table">ลายมือชื่อผู้รับเงิน</td>
-                <td rowspan="2" class="head-table">หมายเหตุ</td>
-            </tr>
-            <tr>
-                <td v-for="d,index in datas.day" :style="{ 'background-color': ck_holiday(d)}" class="head-table">
-                    {{index+1}}
-                    <!-- {{d}} -->
-                </td>
-                <td class="head-table">วันปกติ</td>
-                <td class="head-table">วันหยุด</td>
-                <td class="head-table">ชั่วโมง</td>
-            </tr>
-
+            <thead>
+                <th :colspan="datas.day_num + 17" class="text-center head-top">
+                    <!-- <td colspan="31"> -->
+                        หลักฐานการจ่ายเงินค่าตอบแทนการปฏิบัติงานนอกเวลาราชการกรณีปิดทำการศาลในวันหยุด<br>
+                        ส่วนราชการ ศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์ ประจำเดือน {{datas.month}}<br>
+                        คำสั่งศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์ ที่ {{datas.ven_com_num}} ({{datas.ven_com_name}})
+                    <!-- </td> -->
+                </th>
+                <tr >
+                    <td rowspan="2" class="head-table">ลำดับ</td>
+                    <td rowspan="2" class="head-table">ชื่อ</td>
+                    <td rowspan="2" class="head-table">อัตราค่า<br>ตอบแทน</td>
+                    <td :colspan="datas.day_num" class="head-table">วันที่ที่ปฏิบัติงานนอกเวลาราชการ</td>
+                    <td colspan="3" class="head-table">รวมระยะเวลา<br>ปฏิบัติงาน</td>
+                    <td rowspan="2" class="head-table">จำนวนเงิน</td>
+                    <td rowspan="2" class="head-table">วันเดือนปี</td>
+                    <td rowspan="2" class="head-table">ลายมือชื่อผู้รับเงิน</td>
+                    <td rowspan="2" class="head-table">หมายเหตุ</td>
+                </tr>
+                <tr>
+                    <td v-for="d,index in datas.day" :style="{ 'background-color': ck_holiday(d)}" class="head-table">
+                        <!-- {{index+1}} -->
+                        {{day_d(d)}}
+                    </td>
+                    <td class="head-table">วันปกติ</td>
+                    <td class="head-table">วันหยุด</td>
+                    <td class="head-table">ชั่วโมง</td>
+                </tr>
+            </thead>
+           
             <tr v-for="data,index in datas.datas">
-                <td>{{index + 1 }}</td>
+                <td class="text-center">{{index + 1}}</td>
                 <td>
                     {{data.name}}
                 </td>
@@ -141,38 +147,10 @@ td, th {
                 <td class="text-right">{{formatCurrency(data.price_all)}}</td>
                 <td></td><td></td><td></td>
             </tr>
-                        
-            <!-- <tr v-for="data,index in datas.datas" > 
-                    <td class="text-center">{{index + 1 }}</td>
-                    <td class="name">{{data.name}}</td>
-                    <td class="text-center">{{data.DN_1.price_day}}</td>
-                    <td v-for="d,index in datas.day" v-bind:style="{ 'background-color': ck_holiday(d.ven_date)}" class="head-table">
-                       
-                        <div v-for="wd in data.DN_1.work_day">
-                            <div v-if="d.ven_date === wd" >
-                                &check;
-                            </div>
-                        </div>                        
-                    </td>
-                    <td class="head-table">
-                        {{data.DN_1.weekdays}}
-                    </td>
-                    <td class="head-table">
-                        {{data.DN_1.holiday}}
-                    </td>
-                    <td class="head-table">
-                    -
-                    </td>
-                    <td class="text-right">
-                        {{formatCurrency(data.DN_1.ven_count * data.DN_1.price_day)}}
-                        <span v-if="data.DN_1.price != (data.DN_1.ven_count * data.DN_1.price_day)">❌</span>
-                    </td>
-                    <td></td><td></td><td></td>
-                                     
-            </tr> -->
+            
             <tr>
                 <td :colspan="datas.day_num + 6" class="text-right">รวมเป็นเงินทั้งสิ้น</td>
-                <td style="border-bottom:5px double #336699;">
+                <td class="text-right" style="border-bottom:5px double #336699;">
                     {{formatCurrency(datas.price_all)}}
                 </td>
                 <td colspan="3">({{datas.price_all_text}})</td>
@@ -284,6 +262,10 @@ td, th {
                 return number.toFixed(2).replace(/./g, function(c, i, a) {
                     return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
                 });
+            },
+            day_d(d){
+                const rd = new Date(d);
+                return rd.getDate();
             },
             print(){
                 window.print(); 
