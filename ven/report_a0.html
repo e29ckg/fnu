@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>กลางคืน</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <style>
+            @font-face {
+        font-family: Sarabun;
+        src: url(../dist/fonts/Sarabun/Sarabun-Regular.ttf);
+        /* font-weight: bold; */
+    }
+
+* {
+   font-family: Sarabun;
+}
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #000000;
+  text-align: left;
+  padding: 8px;
+}
+.text-center{
+    text-align: center;
+}
+.text-right{
+    text-align: right;
+}
+.text-sm{
+    font-size: 10px;
+}
+.name{
+    font-size: 16px;
+    text-align: left;
+    white-space: nowrap;
+}
+.head-table{
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+}
+.head-top{
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+    margin-bottom: 15px;
+}
+/* tr:nth-child(even) {
+  background-color: #dddddd;
+} */
+.hd{
+    background-color: #dddddd;
+}
+</style>
+<style type="text/css" media="print">
+    @page
+    {
+        size: auto; /* auto is the initial value */
+        margin: 8mm 4mm 4mm 4mm; /* this affects the margin in the printer settings */
+    }
+    thead
+    {
+        display: table-header-group;
+    }
+    tfoot
+    {
+        display: table-footer-group;
+    }
+</style>
+</head>
+
+<body>
+
+    <div class="content-wrapper" id="app" v-cloak>
+        <div class="head-top">
+            หลักฐานการจ่ายเงินค่าตอบแทนการปฏิบัติงานนอกเวลาราชการกรณีปิดทำการศาลในวันหยุด<br>
+            ส่วนราชการ ศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์ ประจำเดือน {{datas.month}}<br>
+            คำสั่งศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์ ที่ {{datas.ven_com_num}} ({{datas.ven_com_name}})
+        </div>
+        <table>
+            <!-- <tr>
+                <td :colspan="datas.day_num +2" class="text-center">วันที่ที่ปฏิบัติงานนอกเวลาราชการ</td>
+                <td :colspan="datas.day_num +2" class="text-center">วันที่ที่ปฏิบัติงานนอกเวลาราชการ</td>
+                <!-- <td> จำนวน {{datas.count}} ราย</td> 
+            </tr> -->
+            <tr >
+                <td rowspan="2" class="head-table">ลำดับ</td>
+                <td rowspan="2" class="head-table">ชื่อ</td>
+                <td rowspan="2" class="head-table">อัตราค่า<br>ตอบแทน</td>
+                <td :colspan="datas.day_num" class="head-table">วันที่ที่ปฏิบัติงานนอกเวลาราชการ</td>
+                <td colspan="3" class="head-table">รวมระยะเวลา<br>ปฏิบัติงาน</td>
+                <td rowspan="2" class="head-table">จำนวนเงิน</td>
+                <td rowspan="2" class="head-table">วันเดือนปี</td>
+                <td rowspan="2" class="head-table">ลายมือชื่อผู้รับเงิน</td>
+                <td rowspan="2" class="head-table">หมายเหตุ</td>
+            </tr>
+            <tr>
+                <td v-for="d,index in datas.day" :style="{ 'background-color': ck_holiday(d)}" class="head-table">
+                    {{index+1}}
+                    <!-- {{d}} -->
+                </td>
+                <td class="head-table">วันปกติ</td>
+                <td class="head-table">วันหยุด</td>
+                <td class="head-table">ชั่วโมง</td>
+            </tr>
+
+            <tr v-for="data,index in datas.datas">
+                <td>{{index + 1 }}</td>
+                <td>
+                    {{data.name}}
+                </td>
+                <td class="text-center">{{data.price_one}}</td>
+                <td v-for="d,index in datas.day" v-bind:style="{ 'background-color': ck_holiday(d)}" class="head-table">
+                       
+                    <div v-for="wd in data.work_day">
+                        <!-- {{d}}:{{wd}} -->
+                        <div v-if="d === wd" >
+                            &check;
+                        </div>
+                    </div>                        
+                </td>
+                <td class="head-table">
+                    {{data.weekdays}}
+                </td>
+                <td class="head-table">
+                    {{data.holiday}}
+                </td>
+                <td class="head-table">
+                -
+                </td>
+                <td class="text-right">{{formatCurrency(data.price_all)}}</td>
+                <td></td><td></td><td></td>
+            </tr>
+                        
+            <!-- <tr v-for="data,index in datas.datas" > 
+                    <td class="text-center">{{index + 1 }}</td>
+                    <td class="name">{{data.name}}</td>
+                    <td class="text-center">{{data.DN_1.price_day}}</td>
+                    <td v-for="d,index in datas.day" v-bind:style="{ 'background-color': ck_holiday(d.ven_date)}" class="head-table">
+                       
+                        <div v-for="wd in data.DN_1.work_day">
+                            <div v-if="d.ven_date === wd" >
+                                &check;
+                            </div>
+                        </div>                        
+                    </td>
+                    <td class="head-table">
+                        {{data.DN_1.weekdays}}
+                    </td>
+                    <td class="head-table">
+                        {{data.DN_1.holiday}}
+                    </td>
+                    <td class="head-table">
+                    -
+                    </td>
+                    <td class="text-right">
+                        {{formatCurrency(data.DN_1.ven_count * data.DN_1.price_day)}}
+                        <span v-if="data.DN_1.price != (data.DN_1.ven_count * data.DN_1.price_day)">❌</span>
+                    </td>
+                    <td></td><td></td><td></td>
+                                     
+            </tr> -->
+            <tr>
+                <td :colspan="datas.day_num + 6" class="text-right">รวมเป็นเงินทั้งสิ้น</td>
+                <td style="border-bottom:5px double #336699;">
+                    {{formatCurrency(datas.price_all)}}
+                </td>
+                <td colspan="3">({{datas.price_all_text}})</td>
+            </tr>
+            
+        </table>
+        <div>
+            <table>
+                <tr>
+                    <td class="text-center">
+                        <br><br><br>
+                        ลงชื่อ.................................................ผู้จ่ายเงิน<br>
+                        (นางสาวจุฑามาศ ขาวทอง)<br>
+                        นักวิชาการเงินและบัญชีปฏิบัติการ
+                    </td>
+                    <td class="text-center">
+                        <br><br><br>
+                        ลงชื่อ.................................................ผู้อนุมัติ<br>
+                        (นางสาววนิดา พิพัฒน์นภาพร)<br>
+                        ผู้อำนวยการสำนักงานศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์
+                    </td>
+                </tr>
+            </table>
+            
+        </div>
+        <!-- <button @click="print">พิมพ์</button> -->
+        <!-- <a :href="datas.link_download" target="_blank" rel="noopener noreferrer">Download (.docx)</a> -->
+    </div>
+
+    <script src="../dist/js/bootstrap.min.js"></script>
+    <script src="../dist/js/vue.min.js"></script>
+    <script src="../dist/js/axios.min.js"></script>
+
+    <script>
+    var url_base = window.location.protocol + '//' + window.location.host;
+    var url_base_app = window.location.protocol + '//' + window.location.host + '/fnu/ven';
+    // var url_base_now = window.location.href;
+    // console.log(url_base_now);
+    
+    // let url = window.location.href;
+    // let params = (new URL(url)).searchParams;
+    // params.get('month') 
+
+    var appMenu = new Vue({
+        el: '#app',
+        data() {
+            return {
+                datas: '',
+                holiday:'',
+                holiday_count:0
+            }
+        },
+        mounted: function() {
+            this.loadData();
+            
+        },
+        methods: {
+            loadData() {
+                let url = window.location.href;
+                let params = (new URL(url)).searchParams;
+                let ven_com_id = params.get('ven_com_id');
+                axios.post(url_base_app + '/api/report_a0.php',{ven_com_id:ven_com_id})
+                    .then(response => {
+                        // console.log(response.data);
+                        if (response.data.status) {
+                            this.datas = response.data;
+                            this.holiday = response.data.holiday;
+                            // console.log(this.datas);
+                            // Toast.fire({
+                            //     icon: 'success',
+                            //     title: ' Ok.'
+                            // });
+                        } else {
+                            // Toast.fire({
+                            //     icon: 'error',
+                            //     title: 'ไม่พบข้อมูล.'
+                            // });
+                        }
+                        // console.log(response.data.message);
+                        // console.log(response.status);
+                    })
+                    .catch(function(error) {
+
+                        console.log(error);
+                        // Toast.fire({
+                        //     icon: 'error',
+                        //     title: 'เกิดข้อผิดพลาด ' + error
+                        // })
+                    });
+            },
+            ck_holiday(day){
+                for (let i = 0; i < this.holiday.length; i++) {
+                    if(this.holiday[i] == day){
+                        
+                        return 'gray';
+
+                    }
+                }
+                return false;
+            },
+            ck_ven_work(day,data_day){
+                if(data_day == day){
+                    return '/';
+                }
+                return false;
+            },
+            formatCurrency(number) {
+                number = parseFloat(number);
+                return number.toFixed(2).replace(/./g, function(c, i, a) {
+                    return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
+                });
+            },
+            print(){
+                window.print(); 
+            }
+
+
+
+        },
+
+    });
+    </script>
+</body>
+
+</html>

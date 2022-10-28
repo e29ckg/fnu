@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FNU</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../dist/css/sweetalert2.min.css">
+    <link rel="stylesheet" href="../dist/css/app.css">
+</head>
+
+<body>
+
+    <div class="content" id="app" v-cloak>
+        <ul class="nav justify-content-center pt-3">
+            <li class="nav-item">
+                <!-- <a class="nav-link active" aria-current="page" href="#">Active</a> -->
+            </li>
+            <li class="nav-item">
+                
+                    <select class="form-select" name="month" id="month" v-model="month">
+                        <option value="01">มกราคม</option>
+                        <option value="02">กุมภาพันธ์</option>
+                        <option value="03">มีนาคม</option>
+                        <option value="04">เมษายน</option>
+                        <option value="05">พฤษภาคม</option>
+                        <option value="06">มิถุนายน</option>
+                        <option value="07">กรกฎาคม</option>
+                        <option value="08">สิงหาคม</option>
+                        <option value="09">กันยายน</option>
+                        <option value="10">ตุลาคม</option>
+                        <option value="11">พฤศจิกายน</option>
+                        <option value="12">ธันวาคม</option>
+                    </select>                
+            </li>
+            <li class="nav-item">
+                <select class="form-select" name="year" id="year" v-model="year">
+                    <option value="2022">2565</option>
+                    <option value="2023">2566</option>
+                    <option value="2024">2567</option>
+                    <option value="2025">2568</option>
+                    <option value="2026">2569</option>
+                    <option value="2027">2570</option>
+                </select>
+            </li>
+            <li class="nav-item">
+            <button type="button" class="btn btn-primary" @click="loadData()">FIND</button>
+            </li>
+        </ul>
+        <div class="row">
+            <div class="col-12 text-center p-2">
+                <h3>
+                    เวรเดือน {{month_text}} จำนวน {{datas.length}} ราย
+
+                </h3>
+            </div>
+            <div class="col-6">
+
+                <table  class="table">
+                    <thead>                        
+                        <tr>
+                            <td class="text-center">ลำดับ</td>
+                            <td class="text-center">ชื่อ</td>
+                            <td class="text-center">☀️ กลางวัน(วัน)</td>
+                            <td class="text-center">🌙 กลางคืน(วัน)</td>
+                            <td class="text-end">จำนวนเงิน</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="data,index in datas" >
+                                <td class="text-center">{{index + 1}}</td>
+                                <td>{{data.name}}</td>
+                                <td class="text-center">{{data.D_c}}</td>
+                                <td class="text-center">{{data.N_c}}</td>
+                                <td class="text-end">{{formatCurrency(data.D_price + data.N_price)}}</td>                    
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" class="text-end">รวมทั้งสิ้น</td>
+                            <td class="text-end">{{formatCurrency(price_all)}}</td>
+                        </tr>
+                    </tfoot>
+                    
+                </table>
+                <!-- {{datas}} -->
+            </div>
+            <div class="col-6">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td colspan="3" class="text-center">รายการ <a href="../../vengg/" target="_blank" rel="noopener noreferrer">โปรแกรมตารางเวร</a></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="vcs in ven_coms">
+                            <td></td>
+                            <td>
+                                {{vcs.ven_com_num}}
+                            </td>
+                            <td><a :href="'./report_a0.html?ven_com_id='+vcs.id" target="_blank">ใบขวางสรุป </a></td>
+                        </tr>
+                        <tr>
+                            <td>☀️ กลางวัน</td>
+                            <td>
+                                <span v-if="DN_D_ALL() != datas.price_d">&#x274C;</span>
+                                {{formatCurrency(datas.price_d)}}
+                                <span v-if="DN_D_ALL() != datas.price_d">&#x274C; ({{ DN_D_ALL() }})</span>
+                                <span v-else> &#x2714; </span>
+                            </td>
+                            <td><a :href="'./report_a2.html?month='+year+'-'+month" target="_blank">ใบขวางกลางวัน </a></td>
+                        </tr>
+                        <tr>
+                            <td>🌙 กลางคืน</td>
+                            <td>
+                                <span v-if="DN_N_ALL() != datas.price_n">&#x274C;</span>
+                                {{formatCurrency(datas.price_n)}}
+                                <span v-if="DN_N_ALL() != datas.price_n">&#x274C; ({{DN_N_ALL()}})</span>
+                                <span v-else> &#x2714; </span>
+                            </td>
+                            <td><a :href="'./report_a1.html?month='+year+'-'+month" target="_blank">ใบขวางกลางคืน </a></td>
+                        </tr>
+                        <tr>
+                            <td>รวมทั้งสิ้น</td>
+                            <td colspan="2">
+                                <span v-if="DN_TOTAL() != datas.price_all">&#x274C;</span>
+                                {{formatCurrency(datas.price_all)}}
+                                <span v-if="DN_TOTAL() != datas.price_all">&#x274C;({{ DN_TOTAL() }} )</span>
+                                <span v-else> &#x2714; </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <a href="./bank/index.html" target="_blank">ตั้งค่าบัญชีธนาคาร</a>
+                            </td>
+                            <td ><a :href="'./report_x1.html?month='+year+'-'+month" target="_blank">หน้างบประกอบการอนุมัติ</a></td>                            
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                            <td ><a :href="datas.link_download" target="_blank">บันทึกขออนุมัติเบิกเงิน(.docx)</a></td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>        
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="dist/js/vue@2.6.14.js"></script>
+    <script src="dist/js/axios.min.js"></script>
+    <script src="../dist/js/sweetalert2.min.js"></script>
+
+    <script>
+    var url_base = window.location.protocol + '//' + window.location.host;
+    var url_base_app = window.location.protocol + '//' + window.location.host + '/fnu/ven/';
+    var url_base_now = window.location.href;
+    // console.log(url_base_now);
+    // localStorage.setItem("token", "e29ckg9929");
+    // localStorage.clear()
+
+
+    var appMenu = new Vue({
+        el: '#app',
+        data() {
+            return {
+                datas           : [],
+                price_all       : 0,
+                ven_coms       : [],
+                day_num         : 0,
+                holiday_num     : 0,
+                DN_D_PRICE_DAY  : 0,
+                DN_N_PRICE_DAY  : 0,
+                DN_total        : 0,
+                month           : '',
+                year            : '',
+                month_text : ''
+            }
+        },
+        mounted: function() {
+            this.getYM();
+            this.loadData();
+        },
+        
+        methods: {
+            loadData() {
+                
+                let month = this.year + '-' + this.month
+                axios.post(url_base_app + 'api/index_get_data_all.php',{
+                    month:month
+                })
+                    .then(response => {
+                        if (response.data.status) {
+                            this.datas = response.data.datas;
+                            this.month_text = response.data.month;
+                            this.price_all = response.data.price_all
+                            this.ven_coms = response.data.ven_coms
+                            this.DN_D_PRICE_DAY = response.data.DN_D_PRICE_DAY
+                            this.DN_N_PRICE_DAY = response.data.DN_N_PRICE_DAY
+                            this.day_num = response.data.day_num
+                            this.holiday_num = response.data.holiday_num
+                            Swal.fire({
+                            // position: 'top-end',
+                                icon: 'success',
+                                title: response.data.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                            // this.PRICE_ALL()
+                        } else {
+                            this.datas = [];
+                            Swal.fire({
+                            // position: 'top-end',
+                                icon: 'error',
+                                title: response.data.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        }
+                        // console.log(response.data.message);
+                        // console.log(response.status);
+                    })
+                    .catch(function(error) {
+
+                        console.log(error);
+                        // Toast.fire({
+                        //     icon: 'error',
+                        //     title: 'เกิดข้อผิดพลาด ' + error
+                        // })
+                    })
+                    .finally(() => {
+                        // this.PRICE_ALL()
+                    })
+            },
+            find(){
+                console.log(this.year + '-' + this.month) ;
+            },
+            DN_D_ALL(){
+                return this.holiday_num * this.DN_D_PRICE_DAY;                            
+            },
+            DN_N_ALL(){
+                return this.day_num * this.DN_N_PRICE_DAY;                            
+            },
+            DN_TOTAL(){
+                return this.DN_D_ALL() + this.DN_N_ALL();                            
+            },
+            PRICE_ALL(){
+                let p_all = 0;
+                for (let i = 0; i < this.datas.length; i++) {
+                    p_all += (datas[i].D_price + datas[i].N_price)
+                }
+                this.price_all = formatCurrency(p_all); 
+            },
+            getYM(){
+                let MyDate = new Date();
+                let MyDateString;
+                // MyDate.setDate(MyDate.getDate() + 20);
+                MyDateString = MyDate.getFullYear() + '-' + ("0" + (MyDate.getMonth()+1)).slice(-2);
+                this.year = MyDate.getFullYear();
+                this.month = ("0" + (MyDate.getMonth()+1)).slice(-2);
+                // console.log(MyDateString);
+            },
+            formatCurrency(number) {
+                number = parseFloat(number);
+                return number.toFixed(0).replace(/./g, function(c, i, a) {
+                    return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
+                });
+            },
+
+        },
+
+    });
+    </script>
+</body>
+
+</html>

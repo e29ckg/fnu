@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>หน้างบประกอบการอนุมัติโอนเงินเข้าบัญชีในระบบ K-Cash Connect Plus</title>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="../dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../dist/css/app.css">
+    
+</head>
+<style>
+    @font-face {
+        font-family: Sarabun;
+        src: url(../dist/fonts/Sarabun/Sarabun-Regular.ttf);
+        /* font-weight: bold; */
+    }
+
+    * {
+    font-family: Sarabun;
+    }
+</style>
+<style type="text/css" media="print">
+    @page
+    {
+        size: auto; /* auto is the initial value */
+        margin: 8mm 8mm 8mm 8mm; /* this affects the margin in the printer settings */
+    }
+    thead {
+        display: table-header-group;
+    }
+    /* tfoot {
+        display: table-footer-group;
+    } */
+</style>
+<body>
+
+    <div class="content" id="app" v-cloak>
+        <div class="row">
+            <div class="">
+                <table  class="table table-bordered">
+                    <thead>         
+                        <tr>                            
+                            <td colspan="10" class="text-center">
+                                หน้างบประกอบการอนุมัติโอนเงินเข้าบัญชีในระบบ KTB Corporate Online<br>
+                                เงินนอกงบประมาณศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์ บัญชีออมทรัพย์ 715-0-499995-3 บัญชีกระแสรายวัน 715-6-03476-6<br>
+                                <!-- หน้างบประกอบการอนุมัติโอนเงินเข้าบัญชีในระบบ K-Cash Connect Plus<br>
+                                งบดำเนินการ บัญชีออมทรัพย์ 133-2-29018-1  บัญชีกระแสรายวัน 133-1-02413-5<br> -->
+                                ตามบันทึกศาลเยาวชนและครอบครัวจังหวัดประจวบคีรีขันธ์ ลงวันที่ {{datas.doc_date}} (เวรเดือน {{datas.month}})
+                            </td>
+                        </tr>               
+                        <tr>
+                            <td class="text-center">ที่</td>
+                            <td class="text-center">เลขอ้างอิง</td>
+                            <td class="text-center">ชื่อผู้รับ</td>
+                            <td class="text-center">เลขบัญชีผู้รับโอน</td>
+                            <td class="text-center">รายการ</td>
+                            <td class="text-center">จำนวนเงินที่ขอเบิก</td>
+                            <td class="text-center">ภาษี 1%</td>
+                            <td class="text-center">จำนวนเงินที่จ่ายเช็ค</td>
+                            <td class="text-center">เบอร์โทรศัพท์</td>
+                            <td class="text-center">หมายเหตุ</td>
+                        </tr>
+                    </thead>
+                    <tbody class="text-nowrap">
+                        <tr v-for="data,index in datas.datas" >
+                                <td class="text-center">{{data.no}}</td>
+                                <td></td>
+                                <td>{{data.user_name}}</td>
+                                <td>{{data.bank_account}}</td>
+                                <td>ค่าตอบแทนการปฏิบัติงานนอกเวลาฯ</td>
+                                <td class="text-end">{{formatCurrency(data.price_total)}}</td>                    
+                                <td></td>                    
+                                <td class="text-end">{{formatCurrency(data.price_total)}}</td>                    
+                                <td>{{data.phone}}</td>                    
+                                <td>{{data.bank_comment}}</td>                    
+                            </tr>
+                            <tr>
+                                <td colspan="5" class="text-end">
+                                    รวมเงินจ่ายทั้งสิ้น(ตัวอักษร) {{datas.price_all_text}}</td>
+                                <td class="text-end double_line" style="border-bottom:5px double #336699;">{{formatCurrency(datas.price_all)}}</td>
+                                <td class="text-end"></td>
+                                <td class="text-end double_line" style="border-bottom:5px double #336699;">
+                                    {{formatCurrency(datas.price_all)}}
+                                </td>
+                                <td colspan="2"></td>
+                            </tr>
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                    
+                </table>
+            </div>
+           
+        </div>
+        
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../dist/js/bootstrap.min.js"></script>
+    <script src="../dist/js/vue.min.js"></script>
+    <script src="../dist/js/axios.min.js"></script>
+
+    <script>
+    var url_base = window.location.protocol + '//' + window.location.host;
+    var url_base_app = window.location.protocol + '//' + window.location.host + '/fnu/ven';
+    var url_base_now = window.location.href;
+    // console.log(url_base_now);
+    // localStorage.setItem("token", "e29ckg9929");
+    // localStorage.clear()
+
+
+    var appMenu = new Vue({
+        el: '#app',
+        data() {
+            return {
+                datas: '',
+                DN1:0,
+                DN1_PRICE_DAY:3700,
+                DN2:0,
+                DN2_PRICE_DAY:7500,
+                DN_total:0,
+                month:'',
+                year:''
+            }
+        },
+        mounted: function() {
+            this.getYM();
+            this.loadData();
+        },
+        methods: {
+            loadData() {
+                let url = window.location.href;
+                let params = (new URL(url)).searchParams;
+                month = params.get('month');
+                axios.post(url_base_app + '/api/get_data_report_x1.php',{
+                    month:month
+                })
+                    .then(response => {
+                        // console.log(response.data);
+                        if (response.data.status) {
+                            this.datas = response.data;
+                            this.DN1 = response.data.day_num * this.DN1_PRICE_DAY;
+                            this.DN2 = response.data.holiday_num * this.DN2_PRICE_DAY;
+                            this.DN_total = this.DN1 + this.DN2;
+                            // console.log(this.datas);
+                            Swal.fire({
+                                icon: 'success',
+                                title: response.data.massege,
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: response.data.massege,
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        }
+                        // console.log(response.data.massege);
+                        // console.log(response.status);
+                    })
+                    .catch(function(error) {
+
+                        // console.log(error);
+                        Swal.fire({
+                                icon: 'error',
+                                title: response.data.massege,
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                    });
+            },
+            find(){
+                // console.log(this.year + '-' + this.month) ;
+            },
+            getYM(){
+                let MyDate = new Date();
+                let MyDateString;
+                // MyDate.setDate(MyDate.getDate() + 20);
+                MyDateString = MyDate.getFullYear() + '-' + ("0" + (MyDate.getMonth()+1)).slice(-2);
+                this.year = MyDate.getFullYear();
+                this.month = ("0" + (MyDate.getMonth()+1)).slice(-2);
+                // console.log(MyDateString);
+            },
+            formatCurrency(number) {
+                number = parseFloat(number);
+                return number.toFixed(2).replace(/./g, function(c, i, a) {
+                    return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
+                });
+            },
+
+        },
+
+    });
+    </script>
+</body>
+
+</html>

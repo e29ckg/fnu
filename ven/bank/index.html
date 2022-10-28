@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FNU-ตั้งค่าบัญชีธนาคาร</title>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="../../dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../dist/css/sweetalert2.min.css">
+    <link rel="stylesheet" href="../../dist/css/app.css">
+</head>
+
+<body>
+<div class="content-wrapper" id="app" v-cloak>
+    <!-- {{datas}} -->
+        <!-- {{user_id}} {{bank_name}} {{bank_branch}} {{bank_account}} {{phone}} {{comment}} -->
+        <!-- <div class="row">
+            <div class="col-12 text-center p-2">
+                <form @submit.prevent="formSubmit">
+                    <select class="form-select" v-model="user_id">
+                        <option v-for="slu in select_user" :value="slu.user_id" >{{slu.fname}}{{slu.name}} {{slu.sname}}</option>
+                    </select>
+                    <select class="form-select" v-model="bank_name">
+                        <option v-for="slbk in select_bank" :value="slbk">{{slbk}}</option>
+                    </select>
+                    
+                    <input type="text" v-model="bank_branch" placeholder="สาขา">
+                    <input type="text" v-model="bank_account" placeholder="เลขบัญชี">
+                    <input type="text" v-model="phone" placeholder="เบอร์โทรศัพท์">
+                    <input type="text" v-model="comment">
+                    <button type="submit">save</button>
+                </form>
+            </div>
+            
+        </div> -->
+  
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-primary">
+                    <div class="card-body table-responsive p-0">
+                        <table  class="table table-striped">
+                            <thead class="text_center">                        
+                                <tr>
+                                    <td>ชื่อ</td>
+                                    <td>phone</td>
+                                    <td>bank_account</td>
+                                    <td>bank_comment</td>
+                                    <td class="text-center">Act</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="data,index in datas" >
+                                        <td>
+                                            <!-- {{data.user_id}} -->
+                                            {{data.fname}}{{data.name}} {{data.sname}}</td>
+                                            <td>{{data.phone}}</td>                
+                                            <td>{{data.bank_account}}</td>                
+                                            <td>{{data.bank_comment}}</td>           
+                                        <td class="text-center">
+                                            <button @click="update(data.user_id)" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                แก้ไข
+                                            </button> 
+                                            <!-- <button @click="delete_(data.user_id)">ลบ</button>  -->
+                                        </td>                
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                
+                            </tfoot>
+                            
+                        </table>
+
+                    </div>
+                </div>
+                <!-- /.col -->
+            </div>
+        </div>
+        <!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal</h5>
+        <button ref="Close" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      <form>
+          <!-- <div class="mb-3"> -->
+            <!-- <label for="recipient-name" class="col-form-label">ชื่อ:</label> -->
+            <!-- <select class="form-select" v-model="user_id">
+                <option v-for="slu in select_user" :value="slu.user_id" >{{slu.fname}}{{slu.name}} {{slu.sname}}</option>
+            </select> -->
+                    
+          <!-- </div> -->
+          <!-- <div class="mb-3">
+            <label for="message-text" class="col-form-label">ธนาคาร:</label>
+            <select class="form-select" v-model="bank_name">
+                        <option v-for="slbk in select_bank" :value="slbk">{{slbk}}</option>
+                    </select>
+          </div> -->
+          <div class="mb-3">
+            <label for="message-text" class="col-form-label">ชื่อ:</label>
+            <input type="text" v-model="name" class="form-control" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="message-text" class="col-form-label">เบอร์โทรศัพท์:</label>
+            <input type="text" v-model="phone" placeholder="เบอร์โทรศัพท์" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label for="bank_account" class="col-form-label">เลขบัญชี:</label>
+            <input type="text" v-model="bank_account" placeholder="เลขบัญชี" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label for="bank_comment" class="col-form-label">หมายเหตุ</label>
+            <input type="text" v-model="bank_comment" id="bank_comment" placeholder="หมายเหตุ" class="form-control">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" @click="formSubmit()">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script src="../../dist/js/sweetalert2.min.js"></script>
+    <script src="../../dist/js/vue.min.js"></script>
+    <script src="../../dist/js/axios.min.js"></script>
+
+    <script>
+    var url_base = window.location.protocol + '//' + window.location.host;
+    var url_base_app = window.location.protocol + '//' + window.location.host + '/fnu/ven';
+    var url_base_now = window.location.href;
+    console.log(url_base_now);
+
+    // var myModal = new bootstrap.Modal(document.getElementById('myModal'),{});
+    // var myModal = new bootstrap.Modal(document.getElementById("exampleModal"), {});
+    // var exampleModal = document.getElementById("exampleModal");
+    var appMenu = new Vue({
+        el: '#app',
+        data() {
+            return {
+                datas: '',
+                user_id:'',
+                name:'',
+                bank_account:'',
+                bank_comment:'',
+                phone:'',
+                action:'insert',
+                modal_show:false
+            }
+        },
+        mounted: function() {
+            this.loadData();
+        },
+        methods: {
+            loadData() {                
+                axios.post(url_base_app + '/api/bank/get_user.php')
+                    .then(response => {
+                        console.log(response.data);
+                        if (response.data.status) {
+                            this.datas = response.data.datas;
+                            console.log(this.datas);
+                        } else {
+                            // Toast.fire({
+                            //     icon: 'error',
+                            //     title: 'ไม่พบข้อมูล.'
+                            // });
+                        }
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                        // Toast.fire({
+                        //     icon: 'error',
+                        //     title: 'เกิดข้อผิดพลาด ' + error
+                        // })
+                    });
+            },
+            formSubmit(){
+                if(this.user_id != '' && this.bank_comment != '' && this.bank_account != '' && this.phone != ''){
+                    axios.post(url_base_app + '/api/bank/action.php',{
+                        action:this.action,
+                        user_id:this.user_id,
+                        bank_account:this.bank_account,
+                        phone:this.phone,
+                        bank_comment:this.bank_comment
+                    })
+                    .then(response => {
+                        console.log(response.data);
+                        if (response.data.status) {
+                            this.loadData();
+                            this.user_id = '';
+                            this.bank_account = '';
+                            this.phone = '';
+                            this.bank_comment = '';
+                            this.action = 'insert';
+                            this.$refs.Close.click();
+                            Swal.fire(
+                                response.data.massege,
+                                'You clicked the button!',
+                                'success'
+                            )
+                        } else {
+                            Swal.fire(
+                                response.data.massege,
+                                'You clicked the button!',
+                                'error'
+                            )
+                           
+                        }
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
+
+                }else{
+                    Swal.fire(
+                        'กรุณาตรวจสอบการป้อนข้อมูล!',
+                        'You clicked the button!',
+                        'error'
+                    )
+                }
+
+            },
+            update(user_id){
+                axios.post(url_base_app + '/api/bank/get_user_one.php',{
+                        user_id:user_id
+                    })
+                    .then(response => {
+                        console.log(response.data);
+                        if (response.data.status) {
+                            this.user_id = response.data.datas[0].user_id;
+                            this.name = response.data.datas[0].fname + response.data.datas[0].name + ' ' +response.data.datas[0].sname;
+                            this.bank_account = response.data.datas[0].bank_account;
+                            this.phone = response.data.datas[0].phone;
+                            this.bank_comment = response.data.datas[0].bank_comment;
+                            this.action = 'update';
+                            // this.$refs.Show.click();
+                        } else {
+                            Swal.fire(
+                                response.data.massege,
+                                'You clicked the button!',
+                                'error'
+                            )
+                           
+                        }
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
+            },           
+                      
+            modal_close(){   
+                // document.getElementById('exampleModal').click();
+                this.$refs.Close.click();
+                console.log('modal_close');
+            }       
+        },
+
+    });
+    </script>
+</body>
+
+</html>
